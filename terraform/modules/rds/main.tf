@@ -1,31 +1,26 @@
-resource "aws_db_subnet_group" "my_db_subnet_group" {
-  name       = "${var.db_name}-subnet-group"
-  subnet_ids = var.subnet_ids
-
-  tags = {
-    Name = "${var.db_name} DB Subnet Group"
-  }
-}
-
 resource "aws_db_instance" "mysql" {
-  identifier              = var.db_name
-  allocated_storage        = 20
-  storage_type            = "gp2"
-  engine                 = "mysql"
-  engine_version          = "8.0"
-  instance_class          = "db.t3.micro"
-  db_subnet_group_name    = aws_db_subnet_group.my_db_subnet_group.name
-  vpc_security_group_ids   = [var.security_group_id]
+  allocated_storage       = var.allocated_storage
+  engine                  = "mysql"
+  engine_version          = var.engine_version
+  instance_class          = var.instance_class
+  db_name                 = var.db_name
   username                = var.username
   password                = var.password
-  db_name                 = var.db_name
-  skip_final_snapshot     = true
-
-  tags = {
-    Name = "MySQL Database"
-  }
+  parameter_group_name    = var.parameter_group_name
+  db_subnet_group_name    = var.db_subnet_group_name
+  vpc_security_group_ids  = var.vpc_security_group_ids
+  skip_final_snapshot     = var.skip_final_snapshot
+  publicly_accessible     = var.publicly_accessible
+  multi_az                = var.multi_az
+  storage_encrypted       = var.storage_encrypted
+  backup_retention_period = var.backup_retention_period
 }
 
-output "db_instance_id" {
-  value = aws_db_instance.mysql.id
+resource "aws_db_subnet_group" "default" {
+  name       = var.db_subnet_group_name
+  subnet_ids = ["subnet-0956cddd9fcc15972", "subnet-0bb5fd2a9998cd95c","subnet-0b3a717d0f1646242"]  
+
+  tags = {
+    Name = "Default subnet group"
+  }
 }
