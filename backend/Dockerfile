@@ -1,3 +1,4 @@
+# Use a multi-stage build
 FROM --platform=linux/amd64 node:16 AS build
 
 WORKDIR /app
@@ -10,10 +11,18 @@ COPY . .
 
 RUN npm run build
 
-FROM --platform=linux/amd64 nginx:alpine
+# Use the same Node.js image for the final stage
+FROM --platform=linux/amd64 node:16
 
-COPY --from=build /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-EXPOSE 80
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package*.json ./
 
-CMD ["nginx", "-g", "daemon off;"]
+RUN npm install --only=production
+
+# Expose the port your app runs on
+EXPOSE 3001
+
+# Command to run your app (update to main.js)
+CMD ["node", "dist/main.js"]
