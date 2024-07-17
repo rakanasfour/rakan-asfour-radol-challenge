@@ -1,6 +1,6 @@
-FROM node:16
+FROM --platform=linux/amd64 node:16 AS build
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 
@@ -10,6 +10,10 @@ COPY . .
 
 RUN npm run build
 
-EXPOSE 3001
+FROM --platform=linux/amd64 nginx:alpine
 
-CMD ["npm", "run", "start:prod"]
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
