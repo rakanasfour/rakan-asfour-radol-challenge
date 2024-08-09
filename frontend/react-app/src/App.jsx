@@ -7,7 +7,8 @@ function App() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://a19ad1d6e674744f4adee22e44005fac-1610072593.us-east-2.elb.amazonaws.com:3001/users');
+        const response = await fetch('http://backend-service:3001/users
+:3001/users');
 
         if (!response.ok) {
           throw new Error('Network response was not ok');
