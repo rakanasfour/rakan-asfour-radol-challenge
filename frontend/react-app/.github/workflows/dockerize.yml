@@ -1,0 +1,41 @@
+name: Build and Push Docker Image to ECR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22.3.0'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build the Vite app
+      run: npm run build
+
+    - name: Log in to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build Docker image
+      run: |
+        docker build -t frontend .
+
+    - name: Tag Docker image
+      run: |
+        docker tag frontend:latest 866934333672.dkr.ecr.us-east-2.amazonaws.com/frontend:latest
+
+    - name: Push Docker image to ECR
+      run: |
+        docker push 866934333672.dkr.ecr.us-east-2.amazonaws.com/frontend:latest
